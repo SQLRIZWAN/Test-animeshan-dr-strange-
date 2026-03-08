@@ -1,123 +1,1263 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Treding Store - Loading</title>
+    <title>STARK INDUSTRIES - 2AM Lab Interface</title>
     <style>
-        /* Basic Setup */
-        body { 
-            margin: 0; padding: 0; 
-            background-color: #050505; /* Deep dark background */
-            color: #fff; 
-            font-family: 'Arial', sans-serif; 
-            display: flex; justify-content: center; align-items: center; 
-            height: 100vh; overflow: hidden; 
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;500;700&display=swap');
+        
+        body, html {
+            width: 100%; height: 100%;
+            background: #000;
+            font-family: 'Rajdhani', 'Segoe UI', sans-serif;
+            overflow: hidden;
+            cursor: none; /* Hide default cursor for immersion */
         }
 
-        /* Loading Screen Container */
-        .loader-container { 
-            position: relative; 
-            display: flex; justify-content: center; align-items: center; 
-            width: 300px; height: 300px; 
+        /* Custom Cursor - Arc Reactor Style */
+        #cursor {
+            position: fixed;
+            width: 20px; height: 20px;
+            border: 2px solid rgba(0, 212, 255, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s, width 0.2s, height 0.2s;
+            box-shadow: 0 0 20px #00d4ff, inset 0 0 10px rgba(0,212,255,0.5);
+            mix-blend-mode: screen;
         }
 
-        /* Dr. Strange Style Hologram Rings */
-        .ring { 
-            position: absolute; 
-            border-radius: 50%; 
-            border: 2px solid transparent; 
+        #cursor.active {
+            transform: translate(-50%, -50%) scale(0.8);
+            background: rgba(0, 212, 255, 0.3);
         }
-        
-        /* Orange/Gold Outer Mandala */
-        .ring1 { 
-            width: 250px; height: 250px; 
-            border-top: 3px solid #ff9d00; border-bottom: 3px solid #ff9d00; 
-            animation: spin 4s linear infinite; 
-            box-shadow: 0 0 20px #ff9d00; 
+
+        #cursor-trail {
+            position: fixed;
+            width: 40px; height: 40px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: transform 0.3s ease-out;
         }
-        
-        /* Cyan Sci-Fi Inner Ring (Tony Stark Vibe) */
-        .ring2 { 
-            width: 180px; height: 180px; 
-            border-left: 2px dashed #00ffff; border-right: 2px dashed #00ffff; 
-            animation: spin-reverse 3s linear infinite; 
-            box-shadow: 0 0 15px #00ffff; 
+
+        /* 2AM Lab Atmosphere */
+        #loading-screen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: 
+                radial-gradient(circle at 30% 70%, rgba(0, 100, 200, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 70% 30%, rgba(0, 212, 255, 0.1) 0%, transparent 40%),
+                #000;
+            z-index: 9999;
+            perspective: 2000px;
+            overflow: hidden;
         }
-        
-        /* Inner glowing dots */
-        .ring3 { 
-            width: 120px; height: 120px; 
-            border-top: 3px dotted #ff9d00; border-left: 3px dotted #ff9d00; 
-            animation: spin 2s linear infinite; 
+
+        /* Volumetric Fog */
+        .volumetric-fog {
+            position: absolute;
+            width: 200%; height: 100%;
+            background: 
+                repeating-linear-gradient(90deg, transparent, rgba(0,150,255,0.03) 1px, transparent 100px),
+                repeating-linear-gradient(0deg, transparent, rgba(0,200,255,0.02) 1px, transparent 100px);
+            animation: fogMove 20s linear infinite;
+            pointer-events: none;
         }
-        
-        /* Treding Store Logo Text */
-        .logo-text { 
-            position: absolute; 
-            font-size: 32px; font-weight: bold; 
-            color: #00ffff; /* Cyan glow */
-            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff; 
-            opacity: 0; 
-            transform: scale(0.5); 
-            transition: all 1s ease-in-out; 
-            text-transform: uppercase; letter-spacing: 3px; 
+
+        @keyframes fogMove {
+            0% { transform: translateX(0) translateY(0); }
+            100% { transform: translateX(-100px) translateY(-50px); }
+        }
+
+        /* Hard Light Floor Grid */
+        .holofloor {
+            position: absolute;
+            bottom: -50%;
+            left: -50%;
+            width: 200%; height: 100%;
+            background: 
+                linear-gradient(transparent 0%, rgba(0, 150, 255, 0.15) 50%, transparent 100%),
+                repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(0, 212, 255, 0.4) 50px),
+                repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(0, 212, 255, 0.4) 50px);
+            transform: rotateX(85deg);
+            transform-origin: center bottom;
+            animation: gridFlow 3s linear infinite;
+            box-shadow: 0 0 100px rgba(0,212,255,0.2);
+        }
+
+        @keyframes gridFlow {
+            0% { transform: rotateX(85deg) translateY(0); }
+            100% { transform: rotateX(85deg) translateY(50px); }
+        }
+
+        /* Layer Architecture */
+        .holo-space {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            transform-style: preserve-3d;
+            z-index: 10;
+        }
+
+        .layer-background {
+            transform: translateZ(-500px) scale(1.5);
+            opacity: 0.4;
+            filter: blur(1px);
+        }
+
+        .layer-mid {
+            transform: translateZ(0);
+        }
+
+        .layer-foreground {
+            transform: translateZ(200px);
+            filter: drop-shadow(0 0 30px rgba(0,212,255,0.4));
+        }
+
+        /* Holographic Windows - Hard Light Tech */
+        .holo-window {
+            position: absolute;
+            background: 
+                linear-gradient(135deg, rgba(0, 20, 40, 0.4), rgba(0, 10, 20, 0.2));
+            border: 1px solid rgba(0, 212, 255, 0.6);
+            border-top: 2px solid rgba(0, 212, 255, 0.9);
+            box-shadow: 
+                0 0 40px rgba(0, 212, 255, 0.15),
+                inset 0 0 40px rgba(0, 212, 255, 0.05),
+                0 20px 50px rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px) brightness(1.2);
+            transform-style: preserve-3d;
+            transition: box-shadow 0.3s, border-color 0.3s;
+            overflow: hidden;
+            cursor: grab;
+        }
+
+        .holo-window::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,212,255,0.2), transparent);
+            transition: left 0.5s;
+            pointer-events: none;
+        }
+
+        .holo-window:hover::before {
+            left: 100%;
+        }
+
+        .holo-window:active {
+            cursor: grabbing;
+            border-color: #80e5ff;
+            box-shadow: 
+                0 0 60px rgba(0, 212, 255, 0.3),
+                inset 0 0 40px rgba(0, 212, 255, 0.1);
+        }
+
+        /* Window States */
+        .holo-window.tossed {
+            animation: tossPhysics 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes tossPhysics {
+            0% { 
+                transform: scale(1) rotate(0deg); 
+                opacity: 1;
+                filter: blur(0);
+            }
+            50% {
+                opacity: 0.8;
+                filter: blur(2px);
+            }
+            100% { 
+                transform: scale(0.1) rotate(720deg) translateX(1000px) translateY(-500px); 
+                opacity: 0;
+                filter: blur(20px);
+            }
+        }
+
+        .holo-window.expanded {
+            width: 80vw !important;
+            height: 80vh !important;
+            top: 10% !important;
+            left: 10% !important;
+            z-index: 1000 !important;
+            transform: rotateY(0deg) rotateX(0deg) scale(1) !important;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Ripple Effect Container */
+        .ripple {
+            position: absolute;
+            border: 2px solid rgba(0, 212, 255, 0.8);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            animation: rippleEffect 0.6s ease-out;
+            pointer-events: none;
+            box-shadow: 0 0 20px #00d4ff;
+        }
+
+        @keyframes rippleEffect {
+            to {
+                transform: translate(-50%, -50%) scale(4);
+                opacity: 0;
+                border-width: 0;
+            }
+        }
+
+        .window-header {
+            height: 35px;
+            background: linear-gradient(90deg, rgba(0,212,255,0.3), transparent 60%);
+            border-bottom: 1px solid rgba(0,212,255,0.3);
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            color: #00d4ff;
+            font-size: 12px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 10px;
+            margin-left: auto;
+        }
+
+        .control-btn {
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            border: 1px solid rgba(0,212,255,0.6);
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-btn:hover {
+            background: rgba(0,212,255,0.4);
+            transform: scale(1.2);
+            box-shadow: 0 0 10px #00d4ff;
+        }
+
+        .control-btn.close:hover {
+            background: rgba(255, 50, 50, 0.6);
+            border-color: #ff4444;
+            box-shadow: 0 0 10px #ff4444;
+        }
+
+        .window-content {
+            padding: 20px;
+            color: #00d4ff;
+            font-size: 13px;
+            height: calc(100% - 35px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 3D Holographic Models */
+        .holo-model {
+            width: 100%; height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: modelRotate 25s linear infinite;
+        }
+
+        .model-core {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px; height: 80px;
+            border: 2px solid #00d4ff;
+            border-radius: 50%;
+            box-shadow: 
+                0 0 30px #00d4ff, 
+                inset 0 0 30px rgba(0,212,255,0.3),
+                0 0 60px rgba(0,212,255,0.2);
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), transparent 50%);
+        }
+
+        .model-orbits {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 150px; height: 150px;
+            border: 1px dashed rgba(0,212,255,0.6);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) rotateX(60deg);
+            animation: orbitRotate 12s linear infinite reverse;
+            box-shadow: 0 0 20px rgba(0,212,255,0.2);
+        }
+
+        .model-orbits::before,
+        .model-orbits::after {
+            content: '';
+            position: absolute;
+            border: 1px solid rgba(0,212,255,0.3);
+            border-radius: 50%;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .model-orbits::before { width: 120%; height: 120%; }
+        .model-orbits::after { width: 60%; height: 60%; border-style: dotted; }
+
+        @keyframes orbitRotate {
+            from { transform: translate(-50%, -50%) rotateX(60deg) rotateZ(0deg); }
+            to { transform: translate(-50%, -50%) rotateX(60deg) rotateZ(360deg); }
+        }
+
+        @keyframes modelRotate {
+            from { transform: rotateY(0deg); }
+            to { transform: rotateY(360deg); }
+        }
+
+        /* Central Arc Reactor - Enhanced */
+        .arc-reactor-container {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        .arc-reactor {
+            position: relative;
+            width: 180px; height: 180px;
+        }
+
+        .reactor-core {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70px; height: 70px;
+            background: 
+                radial-gradient(circle at 30% 30%, #fff 0%, #00d4ff 30%, #0080ff 60%, transparent 70%);
+            border-radius: 50%;
+            box-shadow: 
+                0 0 80px #00d4ff,
+                0 0 120px rgba(0,212,255,0.5),
+                inset 0 0 20px rgba(255,255,255,0.5);
+            animation: corePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes corePulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.9; }
+            50% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+        }
+
+        .reactor-ring {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            border: 2px solid rgba(0,212,255,0.8);
+            border-radius: 50%;
+            box-shadow: 0 0 30px rgba(0,212,255,0.4), inset 0 0 20px rgba(0,212,255,0.1);
+        }
+
+        .ring-1 { width: 100%; height: 100%; animation: rotate3D 15s linear infinite; }
+        .ring-2 { width: 75%; height: 75%; animation: rotate3D 10s linear infinite reverse; border-style: dashed; opacity: 0.8; }
+        .ring-3 { width: 50%; height: 50%; animation: rotate3D 7s linear infinite; border-width: 1px; opacity: 0.6; }
+
+        @keyframes rotate3D {
+            from { transform: translate(-50%, -50%) rotateY(0deg) rotateX(70deg); }
+            to { transform: translate(-50%, -50%) rotateY(360deg) rotateX(70deg); }
+        }
+
+        /* Light Reflection on Face (Simulated) */
+        .face-glow {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(0,212,255,0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 998;
+            opacity: 0.3;
+            mix-blend-mode: screen;
+        }
+
+        /* Data Streams - Matrix Style */
+        .data-stream {
+            position: absolute;
+            color: rgba(0,212,255,0.4);
+            font-family: monospace;
+            font-size: 11px;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            letter-spacing: 4px;
+            animation: streamFlow 10s linear infinite;
+            pointer-events: none;
+            text-shadow: 0 0 10px rgba(0,212,255,0.5);
+        }
+
+        @keyframes streamFlow {
+            0% { transform: translateY(-100vh); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(100vh); opacity: 0; }
+        }
+
+        /* JARVIS Voice Interface */
+        .jarvis-line {
+            position: absolute;
+            bottom: 25%; left: 50%;
+            transform: translateX(-50%);
+            color: #00d4ff;
+            font-size: 16px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            opacity: 0;
+            animation: jarvisSpeak 4s ease-in-out;
+            text-shadow: 
+                0 0 20px rgba(0,212,255,0.8),
+                0 0 40px rgba(0,212,255,0.4);
+            z-index: 100;
+            font-weight: 300;
+            white-space: nowrap;
+        }
+
+        @keyframes jarvisSpeak {
+            0%, 100% { opacity: 0; transform: translateX(-50%) translateY(30px); filter: blur(5px); }
+            20%, 80% { opacity: 1; transform: translateX(-50%) translateY(0); filter: blur(0); }
+        }
+
+        /* Loading Sequence */
+        .loading-bar-container {
+            position: absolute;
+            bottom: 8%; left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            z-index: 100;
+        }
+
+        .loading-label {
+            display: flex;
+            justify-content: space-between;
+            color: #00d4ff;
+            font-size: 12px;
+            letter-spacing: 5px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        .loading-bar {
+            width: 100%; height: 2px;
+            background: rgba(0,212,255,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loading-progress {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, transparent, #00d4ff, #80e5ff, #00d4ff, transparent);
+            box-shadow: 0 0 20px #00d4ff;
+            animation: loadProgress 5s ease-out forwards;
+            position: relative;
+        }
+
+        .loading-progress::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 100px; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent);
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes loadProgress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100px); }
+            100% { transform: translateX(200px); }
+        }
+
+        /* Digital Dust Particles */
+        .digital-dust {
+            position: absolute;
+            width: 3px; height: 3px;
+            background: #00d4ff;
+            border-radius: 50%;
+            box-shadow: 0 0 6px #00d4ff;
+            pointer-events: none;
+            animation: dustFloat 3s ease-out forwards;
+        }
+
+        @keyframes dustFloat {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        }
+
+        /* Scan Lines */
+        .scan-lines {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(to bottom, transparent 50%, rgba(0,212,255,0.02) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 999;
+            animation: scanMove 10s linear infinite;
+        }
+
+        @keyframes scanMove {
+            from { transform: translateY(-100vh); }
+            to { transform: translateY(100vh); }
+        }
+
+        /* Gesture Zones */
+        .gesture-hint {
+            position: absolute;
+            bottom: 15%; left: 50%;
+            transform: translateX(-50%);
+            color: rgba(0,212,255,0.4);
+            font-size: 11px;
+            letter-spacing: 3px;
             text-align: center;
-        }
-        
-        /* Main Website Content (Hidden initially) */
-        .main-content { 
-            display: none; text-align: center; 
+            z-index: 50;
+            pointer-events: none;
         }
 
-        /* Animations */
-        @keyframes spin { 
-            0% { transform: rotate(0deg); } 
-            100% { transform: rotate(360deg); } 
+        /* Main Content - Dashboard */
+        #main-content {
+            display: none;
+            min-height: 100vh;
+            background: 
+                radial-gradient(ellipse at center, #0a1a2e 0%, #000 100%);
+            color: white;
+            padding: 60px;
+            position: relative;
+            overflow: hidden;
         }
-        @keyframes spin-reverse { 
-            0% { transform: rotate(360deg); } 
-            100% { transform: rotate(0deg); } 
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            max-width: 1600px;
+            margin: 0 auto;
+            transform-style: preserve-3d;
         }
-        
-        /* JS Classes for Transitions */
-        .hide-rings { 
-            opacity: 0; transform: scale(1.5); transition: all 1s ease-out; 
+
+        .holo-card {
+            background: rgba(0, 20, 40, 0.3);
+            border: 1px solid rgba(0,212,255,0.3);
+            padding: 30px;
+            transform-style: preserve-3d;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
         }
-        .show-logo { 
-            opacity: 1; transform: scale(1); 
+
+        .holo-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,212,255,0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .holo-card:hover::before {
+            left: 100%;
+        }
+
+        .holo-card:hover {
+            transform: translateY(-10px) rotateX(5deg) scale(1.02);
+            border-color: #00d4ff;
+            box-shadow: 
+                0 20px 60px rgba(0,212,255,0.2),
+                0 0 0 1px rgba(0,212,255,0.5);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            color: #00d4ff;
+            font-size: 14px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .card-status {
+            width: 8px; height: 8px;
+            background: #00d4ff;
+            border-radius: 50%;
+            margin-right: 10px;
+            box-shadow: 0 0 10px #00d4ff;
+            animation: statusPulse 2s infinite;
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .progress-bar {
+            height: 3px;
+            background: rgba(0,212,255,0.2);
+            margin-top: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff, #80e5ff);
+            box-shadow: 0 0 10px #00d4ff;
+            transition: width 1s ease-out;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .loading-bar-container { width: 80vw; }
+            .holo-window { width: 85vw !important; left: 7.5vw !important; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Inertia Dragging Physics */
+        .physics-body {
+            transition: transform 0.1s linear;
         }
     </style>
 </head>
 <body>
 
-    <div class="loader-container" id="loader">
-        <div class="ring ring1" id="r1"></div>
-        <div class="ring ring2" id="r2"></div>
-        <div class="ring ring3" id="r3"></div>
-        <div class="logo-text" id="logo">Treding<br>Store</div>
+    <!-- Custom Cursor -->
+    <div id="cursor"></div>
+    <div id="cursor-trail"></div>
+    
+    <!-- Face Glow Effect -->
+    <div class="face-glow"></div>
+
+    <div id="loading-screen">
+        <div class="volumetric-fog"></div>
+        <div class="holofloor"></div>
+        <div class="scan-lines"></div>
+
+        <!-- Background Data Streams -->
+        <div class="data-stream" style="left: 5%; animation-delay: 0s; font-size: 14px;">JARVIS_CORE</div>
+        <div class="data-stream" style="left: 15%; animation-delay: 2s;">01001010</div>
+        <div class="data-stream" style="left: 25%; animation-delay: 1s;">STARK_IND</div>
+        <div class="data-stream" style="left: 85%; animation-delay: 3s;">SYSTEM_OK</div>
+        <div class="data-stream" style="left: 95%; animation-delay: 0.5s;">02:00_AM</div>
+
+        <!-- Layered Holographic Space -->
+        <div class="holo-space" id="holo-space">
+            
+            <!-- Background Layer - Global Maps -->
+            <div class="layer-background">
+                <div class="holo-window" style="width: 400px; height: 300px; top: 20%; left: 5%; opacity: 0.6;" data-window="globe-bg">
+                    <div class="window-content" style="display: flex; align-items: center; justify-content: center;">
+                        <div style="width: 250px; height: 250px; border: 1px solid rgba(0,212,255,0.3); border-radius: 50%; position: relative; animation: rotate3D 20s linear infinite;">
+                            <div style="position: absolute; width: 100%; height: 1px; background: rgba(0,212,255,0.4); top: 50%;"></div>
+                            <div style="position: absolute; height: 100%; width: 1px; background: rgba(0,212,255,0.4); left: 50%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mid Layer - Interactive Windows -->
+            <div class="layer-mid">
+                <!-- Mark 85 Suit Design -->
+                <div class="holo-window physics-body" style="width: 320px; height: 280px; top: 10%; left: 8%; transform: rotateY(20deg) rotateX(-5deg);" data-window="suit">
+                    <div class="window-header">
+                        <span>Mark 85 // Nanotech</span>
+                        <div class="window-controls">
+                            <div class="control-btn" onclick="minimizeWindow(this)"></div>
+                            <div class="control-btn close" onclick="closeWindow(this)"></div>
+                        </div>
+                    </div>
+                    <div class="window-content">
+                        <div class="holo-model">
+                            <div class="model-core"></div>
+                            <div class="model-orbits"></div>
+                        </div>
+                        <div style="position: absolute; bottom: 15px; left: 20px; font-size: 11px; line-height: 1.8;">
+                            <div>Integrity: <span style="color: #80e5ff;">100%</span></div>
+                            <div>Nanobots: <span style="color: #80e5ff;">Active</span></div>
+                            <div>Power Output: <span style="color: #ffaa00;">400%</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Atomic Structure -->
+                <div class="holo-window physics-body" style="width: 300px; height: 320px; top: 15%; right: 10%; transform: rotateY(-25deg) rotateX(5deg);" data-window="atomic">
+                    <div class="window-header">
+                        <span>New Element // Structure</span>
+                        <div class="window-controls">
+                            <div class="control-btn" onclick="minimizeWindow(this)"></div>
+                            <div class="control-btn close" onclick="closeWindow(this)"></div>
+                        </div>
+                    </div>
+                    <div class="window-content">
+                        <div style="text-align: center; margin-top: 40px;">
+                            <div style="font-size: 64px; color: rgba(0,212,255,0.9); animation: pulse 2s infinite; text-shadow: 0 0 30px rgba(0,212,255,0.8);">⚛</div>
+                            <div style="margin-top: 30px; letter-spacing: 3px; font-size: 13px;">
+                                <div style="margin-bottom: 10px; color: #80e5ff;">ATOMIC ANALYSIS</div>
+                                <div style="font-size: 11px; opacity: 0.8;">Stable // No Palladium</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Circuit Design -->
+                <div class="holo-window physics-body" style="width: 340px; height: 260px; bottom: 20%; left: 3%; transform: rotateY(15deg) rotateX(10deg);" data-window="circuit">
+                    <div class="window-header">
+                        <span>Circuit Schematics</span>
+                        <div class="window-controls">
+                            <div class="control-btn" onclick="minimizeWindow(this)"></div>
+                            <div class="control-btn close" onclick="closeWindow(this)"></div>
+                        </div>
+                    </div>
+                    <div class="window-content">
+                        <svg width="100%" height="100%" style="opacity: 0.7;">
+                            <defs>
+                                <filter id="glow">
+                                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                                    <feMerge>
+                                        <feMergeNode in="coloredBlur"/>
+                                        <feMergeNode in="SourceGraphic"/>
+                                    </feMerge>
+                                </filter>
+                            </defs>
+                            <path d="M 20 60 L 100 60 L 120 40 L 180 40" stroke="#00d4ff" fill="none" stroke-width="2" filter="url(#glow)"/>
+                            <path d="M 20 120 L 80 120 L 100 100 L 160 100 L 180 120 L 250 120" stroke="#00d4ff" fill="none" stroke-width="2" filter="url(#glow)"/>
+                            <path d="M 20 180 L 120 180 L 140 160 L 220 160" stroke="#00d4ff" fill="none" stroke-width="2" filter="url(#glow)"/>
+                            <circle cx="100" cy="60" r="5" fill="#00d4ff" filter="url(#glow)"/>
+                            <circle cx="180" cy="40" r="5" fill="#00d4ff" filter="url(#glow)"/>
+                            <circle cx="120" cy="180" r="5" fill="#00d4ff" filter="url(#glow)"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Global Network -->
+                <div class="holo-window physics-body" style="width: 360px; height: 240px; bottom: 25%; right: 5%; transform: rotateY(-20deg) rotateX(-5deg);" data-window="network">
+                    <div class="window-header">
+                        <span>Global Network</span>
+                        <div class="window-controls">
+                            <div class="control-btn" onclick="minimizeWindow(this)"></div>
+                            <div class="control-btn close" onclick="closeWindow(this)"></div>
+                        </div>
+                    </div>
+                    <div class="window-content">
+                        <div style="display: flex; gap: 25px; align-items: center;">
+                            <div style="width: 120px; height: 120px; border: 2px solid rgba(0,212,255,0.6); border-radius: 50%; position: relative; animation: rotate3D 15s linear infinite; box-shadow: 0 0 30px rgba(0,212,255,0.2);">
+                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; height: 1px; background: rgba(0,212,255,0.6);"></div>
+                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(90deg); width: 90%; height: 1px; background: rgba(0,212,255,0.6);"></div>
+                                <div style="position: absolute; top: 20%; left: 20%; width: 6px; height: 6px; background: #00d4ff; border-radius: 50%; box-shadow: 0 0 10px #00d4ff;"></div>
+                                <div style="position: absolute; bottom: 30%; right: 25%; width: 6px; height: 6px; background: #00d4ff; border-radius: 50%; box-shadow: 0 0 10px #00d4ff;"></div>
+                            </div>
+                            <div style="font-size: 12px; line-height: 2.2; letter-spacing: 1px;">
+                                <div>Satellites: <span style="color: #80e5ff;">4,921</span></div>
+                                <div>Active Nodes: <span style="color: #80e5ff;">98.4%</span></div>
+                                <div>Threat Level: <span style="color: #00ff88;">Low</span></div>
+                                <div>Encryption: <span style="color: #ffaa00;">Quantum</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Foreground Layer -->
+            <div class="layer-foreground">
+                <div class="holo-window" style="width: 280px; height: 100px; top: 5%; left: 50%; transform: translateX(-50%) translateZ(100px);" data-window="status">
+                    <div class="window-header">
+                        <span>System Status</span>
+                    </div>
+                    <div class="window-content" style="display: flex; align-items: center; justify-content: space-around;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 24px; color: #00d4ff; text-shadow: 0 0 20px rgba(0,212,255,0.8);">02:00</div>
+                            <div style="font-size: 10px; opacity: 0.7;">AM // STARK TOWER</div>
+                        </div>
+                        <div style="width: 1px; height: 40px; background: rgba(0,212,255,0.3);"></div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 24px; color: #00d4ff; text-shadow: 0 0 20px rgba(0,212,255,0.8);">98%</div>
+                            <div style="font-size: 10px; opacity: 0.7;">POWER // CORE</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Central Arc Reactor -->
+        <div class="arc-reactor-container">
+            <div class="arc-reactor">
+                <div class="reactor-ring ring-1"></div>
+                <div class="reactor-ring ring-2"></div>
+                <div class="reactor-ring ring-3"></div>
+                <div class="reactor-core"></div>
+            </div>
+        </div>
+
+        <!-- JARVIS Interface -->
+        <div id="jarvis-container"></div>
+
+        <!-- Gesture Hints -->
+        <div class="gesture-hint">
+            <div style="margin-bottom: 5px;">← SWIPE TO NAVIGATE →</div>
+            <div style="font-size: 9px; opacity: 0.6;">PINCH TO ZOOM • TOSS TO DISCARD</div>
+        </div>
+
+        <!-- Loading Bar -->
+        <div class="loading-bar-container">
+            <div class="loading-label">
+                <span>Initializing JARVIS Core</span>
+                <span id="loading-percent">0%</span>
+            </div>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+        </div>
     </div>
 
-    <div class="main-content" id="content">
-        <h1 style="color: #ff9d00; text-shadow: 0 0 10px #ff9d00;">Welcome to Treding Store</h1>
-        <p style="color: #aaa;">Aapki website ka asli content yahan dikhega...</p>
+    <!-- Main Dashboard -->
+    <div id="main-content">
+        <div class="scan-lines"></div>
+        <div class="volumetric-fog"></div>
+        
+        <h1 style="text-align: center; font-size: 48px; margin-bottom: 60px; font-weight: 300; letter-spacing: 8px; position: relative;">
+            <span style="background: linear-gradient(180deg, #fff 0%, #00d4ff 50%, #0080ff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 30px rgba(0,212,255,0.5));">
+                WELCOME BACK, SIR
+            </span>
+            <div style="font-size: 14px; letter-spacing: 4px; margin-top: 10px; opacity: 0.6; -webkit-text-fill-color: #00d4ff;">
+                STARK INDUSTRIES // MAINFRAME
+            </div>
+        </h1>
+        
+        <div class="dashboard-grid">
+            <div class="holo-card" onclick="createRipple(event, this)">
+                <div class="card-header">
+                    <div class="card-status"></div>
+                    <span>Mark 85 Integrity</span>
+                </div>
+                <p style="color: rgba(255,255,255,0.7); line-height: 1.6; font-size: 14px;">
+                    Nanotech suit operating at optimal parameters. All subsystems nominal. Nanobot regeneration at 100% efficiency.
+                </p>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 98%;"></div>
+                </div>
+            </div>
+
+            <div class="holo-card" onclick="createRipple(event, this)">
+                <div class="card-header">
+                    <div class="card-status"></div>
+                    <span>Arc Reactor Output</span>
+                </div>
+                <p style="color: rgba(255,255,255,0.7); line-height: 1.6; font-size: 14px;">
+                    New element core stable at 8 gigajoules per second. Palladium toxicity: 0%. Magnetic containment: Perfect.
+                </p>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 100%; background: linear-gradient(90deg, #00d4ff, #80e5ff, #fff);"></div>
+                </div>
+            </div>
+
+            <div class="holo-card" onclick="createRipple(event, this)">
+                <div class="card-header">
+                    <div class="card-status"></div>
+                    <span>Global Network</span>
+                </div>
+                <p style="color: rgba(255,255,255,0.7); line-height: 1.6; font-size: 14px;">
+                    Connected to 4,921 Stark satellites worldwide. Latency: 0.04ms. Encryption: Quantum-grade protocols active.
+                </p>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 95%;"></div>
+                </div>
+            </div>
+
+            <div class="holo-card" onclick="createRipple(event, this)">
+                <div class="card-header">
+                    <div class="card-status" style="background: #ffaa00; box-shadow: 0 0 10px #ffaa00;"></div>
+                    <span>R&D Projects</span>
+                </div>
+                <p style="color: rgba(255,255,255,0.7); line-height: 1.6; font-size: 14px;">
+                    12 active projects in development. Priority: Clean energy reactor for NYC grid. Timeline: 48 hours.
+                </p>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 67%; background: linear-gradient(90deg, #ffaa00, #ffdd00);"></div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 80px; color: rgba(0,212,255,0.5); font-size: 11px; letter-spacing: 4px;">
+            2:00 AM // STARK TOWER // LAB 4 // JARVIS v12.0
+        </div>
     </div>
 
     <script>
-        // 3 Seconds baad rings gayab hongi aur Logo aayega
-        setTimeout(() => {
-            document.getElementById('r1').classList.add('hide-rings');
-            document.getElementById('r2').classList.add('hide-rings');
-            document.getElementById('r3').classList.add('hide-rings');
-            document.getElementById('logo').classList.add('show-logo');
-        }, 3000); 
+        // Custom Cursor System
+        const cursor = document.getElementById('cursor');
+        const cursorTrail = document.getElementById('cursor-trail');
+        let mouseX = 0, mouseY = 0;
+        let cursorX = 0, cursorY = 0;
 
-        // 5.5 Seconds baad loading screen puri tarah hat jayegi aur website khulegi
-        setTimeout(() => {
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('content').style.display = 'block';
-        }, 5500);
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            // Immediate cursor update
+            cursor.style.left = mouseX + 'px';
+            cursor.style.top = mouseY + 'px';
+        });
+
+        // Smooth trail following
+        function animateCursor() {
+            cursorX += (mouseX - cursorX) * 0.1;
+            cursorY += (mouseY - cursorY) * 0.1;
+            cursorTrail.style.left = cursorX + 'px';
+            cursorTrail.style.top = cursorY + 'px';
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Click effects
+        document.addEventListener('mousedown', () => {
+            cursor.classList.add('active');
+            createRippleAt(mouseX, mouseY);
+        });
+        document.addEventListener('mouseup', () => cursor.classList.remove('active'));
+
+        // Ripple Effect
+        function createRippleAt(x, y) {
+            const ripple = document.createElement('div');
+            ripple.className = 'ripple';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            document.body.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        }
+
+        function createRipple(e, element) {
+            const rect = element.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const ripple = document.createElement('div');
+            ripple.className = 'ripple';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            ripple.style.width = '20px';
+            ripple.style.height = '20px';
+            element.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+            
+            // Play subtle sound effect simulation
+            showJarvisLineSingle("Accessing data...");
+        }
+
+        // Digital Dust Particles (When tossing)
+        function createDigitalDust(x, y) {
+            for (let i = 0; i < 20; i++) {
+                const dust = document.createElement('div');
+                dust.className = 'digital-dust';
+                dust.style.left = x + 'px';
+                dust.style.top = y + 'px';
+                dust.style.setProperty('--tx', (Math.random() - 0.5) * 200 + 'px');
+                dust.style.setProperty('--ty', (Math.random() - 0.5) * 200 + 'px');
+                dust.style.animationDelay = (Math.random() * 0.5) + 's';
+                document.body.appendChild(dust);
+                setTimeout(() => dust.remove(), 3000);
+            }
+        }
+
+        // JARVIS Voice System
+        const jarvisLines = [
+            "Welcome back, sir. It is 2:00 AM.",
+            "Initializing holographic interface...",
+            "All systems nominal.",
+            "Shall I begin the diagnostic?",
+            "Rendering 3D models...",
+            "At your service, sir.",
+            "New element synthesis complete.",
+            "Power levels optimal."
+        ];
+
+        let lineIndex = 0;
+        function showJarvisLine() {
+            if (lineIndex < jarvisLines.length) {
+                const container = document.getElementById('jarvis-container');
+                const line = document.createElement('div');
+                line.className = 'jarvis-line';
+                line.textContent = jarvisLines[lineIndex];
+                container.appendChild(line);
+                
+                setTimeout(() => line.remove(), 4000);
+                lineIndex++;
+                setTimeout(showJarvisLine, 2000);
+            }
+        }
+
+        function showJarvisLineSingle(text) {
+            const container = document.getElementById('jarvis-container');
+            const line = document.createElement('div');
+            line.className = 'jarvis-line';
+            line.textContent = text;
+            container.appendChild(line);
+            setTimeout(() => line.remove(), 4000);
+        }
+
+        // Advanced Drag Physics with Inertia
+        let draggedElement = null;
+        let dragOffsetX = 0, dragOffsetY = 0;
+        let velocityX = 0, velocityY = 0;
+        let lastX = 0, lastY = 0;
+        let isDragging = false;
+
+        document.querySelectorAll('.holo-window').forEach(window => {
+            window.addEventListener('mousedown', startDrag);
+            window.addEventListener('touchstart', startDrag, {passive: false});
+            window.addEventListener('dblclick', expandWindow);
+        });
+
+        function startDrag(e) {
+            if (e.target.classList.contains('control-btn')) return;
+            
+            draggedElement = this;
+            isDragging = true;
+            
+            const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+            
+            const rect = draggedElement.getBoundingClientRect();
+            dragOffsetX = clientX - rect.left;
+            dragOffsetY = clientY - rect.top;
+            
+            lastX = clientX;
+            lastY = clientY;
+            
+            draggedElement.style.zIndex = 1000;
+            draggedElement.style.transition = 'none';
+            draggedElement.style.cursor = 'grabbing';
+            
+            // Ripple on grab
+            createRippleAt(clientX, clientY);
+        }
+
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('touchmove', drag, {passive: false});
+        document.addEventListener('mouseup', stopDrag);
+        document.addEventListener('touchend', stopDrag);
+
+        function drag(e) {
+            if (!isDragging || !draggedElement) return;
+            e.preventDefault();
+            
+            const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+            
+            // Calculate velocity for inertia
+            velocityX = clientX - lastX;
+            velocityY = clientY - lastY;
+            lastX = clientX;
+            lastY = clientY;
+            
+            // Position update
+            const x = clientX - dragOffsetX;
+            const y = clientY - dragOffsetY;
+            
+            // 3D rotation based on movement direction (parallax effect)
+            const rotateY = velocityX * 0.5;
+            const rotateX = -velocityY * 0.5;
+            
+            draggedElement.style.left = x + 'px';
+            draggedElement.style.top = y + 'px';
+            draggedElement.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg) scale(1.05)`;
+        }
+
+        function stopDrag(e) {
+            if (!draggedElement) return;
+            
+            isDragging = false;
+            draggedElement.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+            draggedElement.style.cursor = 'grab';
+            
+            // Check for toss (high velocity)
+            const tossThreshold = 15;
+            if (Math.abs(velocityX) > tossThreshold || Math.abs(velocityY) > tossThreshold) {
+                // Toss away
+                draggedElement.classList.add('tossed');
+                const rect = draggedElement.getBoundingClientRect();
+                createDigitalDust(rect.left + rect.width/2, rect.top + rect.height/2);
+                showJarvisLineSingle("Window dismissed.");
+                
+                setTimeout(() => {
+                    draggedElement.style.display = 'none';
+                    draggedElement.classList.remove('tossed');
+                }, 800);
+            } else {
+                // Return to stable state with slight rotation based on position
+                const rect = draggedElement.getBoundingClientRect();
+                const centerX = window.innerWidth / 2;
+                const rotateY = ((rect.left + rect.width/2 - centerX) / centerX) * 20;
+                draggedElement.style.transform = `rotateY(${rotateY}deg) rotateX(0deg)`;
+            }
+            
+            draggedElement.style.zIndex = '';
+            draggedElement = null;
+            
+            // Reset velocity
+            velocityX = 0;
+            velocityY = 0;
+        }
+
+        // Expand Window (Pinch simulation on double click)
+        function expandWindow() {
+            this.classList.toggle('expanded');
+            if (this.classList.contains('expanded')) {
+                showJarvisLineSingle("Expanding holographic view...");
+                createRippleAt(window.innerWidth/2, window.innerHeight/2);
+            } else {
+                showJarvisLineSingle("Minimizing...");
+            }
+        }
+
+        // Close Window with dust effect
+        function closeWindow(btn) {
+            const window = btn.closest('.holo-window');
+            const rect = window.getBoundingClientRect();
+            createDigitalDust(rect.left + rect.width/2, rect.top + rect.height/2);
+            window.classList.add('tossed');
+            setTimeout(() => {
+                window.style.display = 'none';
+                window.classList.remove('tossed');
+            }, 800);
+            showJarvisLineSingle("Closing interface.");
+        }
+
+        function minimizeWindow(btn) {
+            const window = btn.closest('.holo-window');
+            window.style.transform = 'scale(0) translateY(500px)';
+            window.style.opacity = '0';
+            window.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+            setTimeout(() => {
+                window.style.display = 'none';
+                window.style.transform = '';
+                window.style.opacity = '';
+            }, 500);
+            showJarvisLineSingle("Minimizing to background.");
+        }
+
+        // Loading Sequence
+        let percent = 0;
+        const percentElement = document.getElementById('loading-percent');
+        const loadInterval = setInterval(() => {
+            percent += Math.floor(Math.random() * 3) + 1;
+            if (percent >= 100) {
+                percent = 100;
+                clearInterval(loadInterval);
+                setTimeout(transitionToMain, 1000);
+            }
+            percentElement.textContent = percent + '%';
+        }, 100);
+
+        function transitionToMain() {
+            showJarvisLineSingle("System ready. Welcome back, sir.");
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('loading-screen');
+                loadingScreen.style.opacity = '0';
+                loadingScreen.style.transition = 'opacity 1.5s ease-out';
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                    document.getElementById('main-content').style.display = 'block';
+                    document.body.style.cursor = 'none'; // Keep custom cursor
+                }, 1500);
+            }, 2000);
+        }
+
+        // Start JARVIS
+        setTimeout(showJarvisLine, 1500);
+
+        // Parallax Effect on Mouse Move
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 30;
+            const y = (e.clientY / window.innerHeight - 0.5) * 30;
+            
+            // Move layers at different speeds
+            document.querySelectorAll('.layer-background').forEach(layer => {
+                layer.style.transform = `translateZ(-500px) translateX(${x * 0.5}px) translateY(${y * 0.5}px) scale(1.5)`;
+            });
+            
+            document.querySelectorAll('.layer-mid .holo-window').forEach((win, index) => {
+                if (!draggedElement || draggedElement !== win) {
+                    const depth = (index + 1) * 2;
+                    const currentTransform = win.style.transform;
+                    if (!currentTransform.includes('scale(0)') && !win.classList.contains('tossed')) {
+                        win.style.transform = `${currentTransform.split('rotate')[0]} rotateY(${x * 0.5}deg) rotateX(${-y * 0.5}deg)`;
+                    }
+                }
+            });
+        });
+
+        // Keyboard Shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.holo-window').forEach(win => {
+                    if (win.style.display !== 'none') {
+                        const rect = win.getBoundingClientRect();
+                        createDigitalDust(rect.left + rect.width/2, rect.top + rect.height/2);
+                        win.classList.add('tossed');
+                        setTimeout(() => win.style.display = 'none', 800);
+                    }
+                });
+                showJarvisLineSingle("Closing all interfaces.");
+            }
+            if (e.key === ' ') {
+                e.preventDefault();
+                showJarvisLineSingle("Initializing new analysis protocol...");
+                createRippleAt(window.innerWidth/2, window.innerHeight/2);
+            }
+        });
+
+        // Pinch Zoom Simulation (Mouse Wheel)
+        document.addEventListener('wheel', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                e.preventDefault();
+                const windows = document.querySelectorAll('.holo-window');
+                windows.forEach(win => {
+                    if (win.style.display !== 'none') {
+                        const currentScale = parseFloat(win.dataset.scale || 1);
+                        const newScale = Math.max(0.5, Math.min(2, currentScale - e.deltaY * 0.001));
+                        win.dataset.scale = newScale;
+                        win.style.transform = `scale(${newScale})`;
+                    }
+                });
+            }
+        });
+
+        // Ambient Sound Simulation (Visual)
+        setInterval(() => {
+            if (Math.random() > 0.95) {
+                const hum = document.createElement('div');
+                hum.style.cssText = 'position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:100vw; height:100vw; border:1px solid rgba(0,212,255,0.1); border-radius:50%; pointer-events:none; animation:humPulse 2s ease-out forwards; z-index:5;';
+                document.body.appendChild(hum);
+                setTimeout(() => hum.remove(), 2000);
+            }
+        }, 3000);
+
+        // Add humPulse keyframes dynamically
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes humPulse {
+                0% { transform: translate(-50%,-50%) scale(0); opacity: 0.5; }
+                100% { transform: translate(-50%,-50%) scale(2); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
-
 </body>
-</html>
+    </html>
