@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treding Store - Loading</title>
+    <style>
+        /* Basic Setup */
+        body { 
+            margin: 0; padding: 0; 
+            background-color: #050505; /* Deep dark background */
+            color: #fff; 
+            font-family: 'Arial', sans-serif; 
+            display: flex; justify-content: center; align-items: center; 
+            height: 100vh; overflow: hidden; 
+        }
+
+        /* Loading Screen Container */
+        .loader-container { 
+            position: relative; 
+            display: flex; justify-content: center; align-items: center; 
+            width: 300px; height: 300px; 
+        }
+
+        /* Dr. Strange Style Hologram Rings */
+        .ring { 
+            position: absolute; 
+            border-radius: 50%; 
+            border: 2px solid transparent; 
+        }
+        
+        /* Orange/Gold Outer Mandala */
+        .ring1 { 
+            width: 250px; height: 250px; 
+            border-top: 3px solid #ff9d00; border-bottom: 3px solid #ff9d00; 
+            animation: spin 4s linear infinite; 
+            box-shadow: 0 0 20px #ff9d00; 
+        }
+        
+        /* Cyan Sci-Fi Inner Ring (Tony Stark Vibe) */
+        .ring2 { 
+            width: 180px; height: 180px; 
+            border-left: 2px dashed #00ffff; border-right: 2px dashed #00ffff; 
+            animation: spin-reverse 3s linear infinite; 
+            box-shadow: 0 0 15px #00ffff; 
+        }
+        
+        /* Inner glowing dots */
+        .ring3 { 
+            width: 120px; height: 120px; 
+            border-top: 3px dotted #ff9d00; border-left: 3px dotted #ff9d00; 
+            animation: spin 2s linear infinite; 
+        }
+        
+        /* Treding Store Logo Text */
+        .logo-text { 
+            position: absolute; 
+            font-size: 32px; font-weight: bold; 
+            color: #00ffff; /* Cyan glow */
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff; 
+            opacity: 0; 
+            transform: scale(0.5); 
+            transition: all 1s ease-in-out; 
+            text-transform: uppercase; letter-spacing: 3px; 
+            text-align: center;
+        }
+        
+        /* Main Website Content (Hidden initially) */
+        .main-content { 
+            display: none; text-align: center; 
+        }
+
+        /* Animations */
+        @keyframes spin { 
+            0% { transform: rotate(0deg); } 
+            100% { transform: rotate(360deg); } 
+        }
+        @keyframes spin-reverse { 
+            0% { transform: rotate(360deg); } 
+            100% { transform: rotate(0deg); } 
+        }
+        
+        /* JS Classes for Transitions */
+        .hide-rings { 
+            opacity: 0; transform: scale(1.5); transition: all 1s ease-out; 
+        }
+        .show-logo { 
+            opacity: 1; transform: scale(1); 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="loader-container" id="loader">
+        <div class="ring ring1" id="r1"></div>
+        <div class="ring ring2" id="r2"></div>
+        <div class="ring ring3" id="r3"></div>
+        <div class="logo-text" id="logo">Treding<br>Store</div>
+    </div>
+
+    <div class="main-content" id="content">
+        <h1 style="color: #ff9d00; text-shadow: 0 0 10px #ff9d00;">Welcome to Treding Store</h1>
+        <p style="color: #aaa;">Aapki website ka asli content yahan dikhega...</p>
+    </div>
+
+    <script>
+        // 3 Seconds baad rings gayab hongi aur Logo aayega
+        setTimeout(() => {
+            document.getElementById('r1').classList.add('hide-rings');
+            document.getElementById('r2').classList.add('hide-rings');
+            document.getElementById('r3').classList.add('hide-rings');
+            document.getElementById('logo').classList.add('show-logo');
+        }, 3000); 
+
+        // 5.5 Seconds baad loading screen puri tarah hat jayegi aur website khulegi
+        setTimeout(() => {
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+        }, 5500);
+    </script>
+
+</body>
+</html>
